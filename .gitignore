@@ -1,0 +1,23 @@
+.DS_Store
+.idea
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# Data and results (will be downloaded/generated)
+data/
+*.pth
+
+# Testing cache
+.hypothesis/
+.pytest_cache/
+
+# IDE
+.vscode/
+*.swp
+
+# Logs
+*.log
