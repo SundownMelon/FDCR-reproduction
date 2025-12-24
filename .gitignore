@@ -8,7 +8,6 @@ __pycache__/
 .eggs/
 
 # Data and results (will be downloaded/generated)
-data/
 *.pth
 
 # Testing cache
