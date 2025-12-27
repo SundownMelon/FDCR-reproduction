@@ -21,14 +21,14 @@ from datetime import datetime
 
 
 def run_experiment(attack_type, alpha, server_type, seed=0):
-    """运行单个实验"""
+    """运行单个实验 - 实时显示输出"""
     
     # 构建实验名称
     exp_name = f"{attack_type}_alpha{alpha}_{server_type}_seed{seed}"
     
     # 构建命令
     cmd = [
-        "python", "main.py",
+        "python", "-u", "main.py",  # -u 禁用缓冲，实时输出
         "--device_id", "0",
         "--task", "label_skew",
         "--dataset", "fl_cifar10",
@@ -45,33 +45,32 @@ def run_experiment(attack_type, alpha, server_type, seed=0):
     print(f"\n{'='*60}")
     print(f"运行实验: {exp_name}")
     print(f"命令: {' '.join(cmd)}")
-    print(f"{'='*60}")
+    print(f"{'='*60}\n")
+    sys.stdout.flush()
     
     start_time = time.time()
     
     try:
-        result = subprocess.run(
+        # 使用Popen实时显示输出
+        process = subprocess.Popen(
             cmd,
-            capture_output=True,
-            text=True,
-            timeout=7200  # 2小时超时
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+            text=True
         )
         
+        process.wait()
         elapsed = time.time() - start_time
         
-        if result.returncode == 0:
-            print(f"✅ 实验完成: {exp_name} (耗时: {elapsed/60:.1f}分钟)")
+        if process.returncode == 0:
+            print(f"\n✅ 实验完成: {exp_name} (耗时: {elapsed/60:.1f}分钟)")
             return True, elapsed
         else:
-            print(f"❌ 实验失败: {exp_name}")
-            print(f"错误输出: {result.stderr[:500]}")
+            print(f"\n❌ 实验失败: {exp_name} (返回码: {process.returncode})")
             return False, elapsed
             
-    except subprocess.TimeoutExpired:
-        print(f"⏰ 实验超时: {exp_name}")
-        return False, 7200
     except Exception as e:
-        print(f"❌ 实验异常: {exp_name}, 错误: {e}")
+        print(f"\n❌ 实验异常: {exp_name}, 错误: {e}")
         return False, 0
 
 
