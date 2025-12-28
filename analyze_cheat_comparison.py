@@ -111,7 +111,11 @@ def find_experiment_paths(attack_type, alpha, server_type):
     if not os.path.exists(base_path):
         return None, None
     
-    exp_dirs = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+    # 查找包含正确server_type的目录
+    exp_dirs = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d)) and server_type in d]
+    if not exp_dirs:
+        # 如果没找到，尝试所有目录
+        exp_dirs = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
     if not exp_dirs:
         return None, None
     
