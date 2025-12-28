@@ -1,0 +1,2 @@
+task,dataset,attack_type,optim,rand_domain_select,server,save_checkpoint
+label_skew,fl_cifar10,backdoor,FedFish,False,OurRandomControlNoCheat,False
