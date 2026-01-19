@@ -11,8 +11,8 @@ def analyze_no_attack_experiment(alpha, server_type, seed=0):
     """分析单个无攻击实验"""
     csv_name = f"no_attack_alpha{alpha}_{server_type}_seed{seed}"
     
-    # 构建路径 (使用backdoor路径，因为我们用backdoor类型但恶意率为0)
-    base_path = Path("data/label_skew/backdoor/0.0/fl_cifar10")
+    # 构建路径 (实际路径是base_backdoor/0.0)
+    base_path = Path("data/label_skew/base_backdoor/0.0/fl_cifar10")
     result_path = base_path / str(alpha) / server_type / "FedFish" / csv_name
     
     detection_file = result_path / "detection_results.csv"
