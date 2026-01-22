@@ -1,11 +1,16 @@
 """
-FDCR "No-Cheat" Version - 去作弊版FDCR服务器
+FDCR "No-Cheat" Version - 去作弊版FDCR服务器 (带管线显微镜)
 
 与原始OurRandomControl的唯一区别：
 - 删除了 client_type 先验知识的使用
 - 删除了对恶意客户端Fisher信息的 randn_like 替换
 
 这个版本用于验证FDCR的真实检测能力，而非依赖先验知识的"作弊"能力。
+
+Step 1 管线显微镜：
+- 记录核心四件套：F_raw, I_minmax, delta_w_true, g_weighted
+- 记录 FDCR 决策量：ge_global, V_k, cluster_labels, alpha_b
+- 支持层级切片和 top-k 稀疏表示
 """
 
 from Server.utils.server_methods import ServerMethod
@@ -17,6 +22,7 @@ import torch
 import copy
 import torch.nn.functional as F
 from utils.finch import FINCH
+import os
 
 
 class OurRandomControlNoCheat(ServerMethod):
@@ -34,6 +40,10 @@ class OurRandomControlNoCheat(ServerMethod):
         self.last_benign_idx = None
         self.last_evil_idx = None
         self.last_aggregation_weights = None
+        
+        # Step 1 管线显微镜: Logger 初始化标志
+        self.fdcr_logger = None
+        self.enable_step1_logging = os.environ.get('FDCR_STEP1_LOGGING', '0') == '1'
 
     def compute_filtered_ratio(self, predicted_malicious, actual_malicious):
         """
@@ -94,6 +104,18 @@ class OurRandomControlNoCheat(ServerMethod):
             vectorize_nets_list.append(vectorize_net)
         prev_vectorize_net = torch.cat([p.view(-1) for p in prev_net.parameters()]).detach()
 
+        # Step 1: 初始化 Logger（如果启用且尚未初始化）
+        if self.enable_step1_logging and self.fdcr_logger is None:
+            from utils.fdcr_logger import FDCRLogger
+            output_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'logs')
+            self.fdcr_logger = FDCRLogger(
+                output_dir=output_dir,
+                cfg=self.cfg,
+                reference_net=nets_list[0],
+                top_k=512
+            )
+            print(f'[Step1 Logger] Initialized at {self.fdcr_logger.get_output_dir()}')
+
         grad_list = []
         weight_list = []
         fish_list = []
@@ -137,6 +159,7 @@ class OurRandomControlNoCheat(ServerMethod):
 
         benign_idx = list(range(len(online_clients_list)))
         evils_idx = []
+        cluster_labels = [0] * len(online_clients_list)  # 默认都是良性
         
         if len(fin.partitions) == 0:
             reconstructed_freq = freq
@@ -146,6 +169,10 @@ class OurRandomControlNoCheat(ServerMethod):
             evils_center_idx = np.where(select_partitions['cluster_centers'] == evils_center)[0]
             evils_idx = select_partitions['cluster_core_indices'][int(evils_center_idx)]
             benign_idx = [i for i in range(len(online_clients_list)) if i not in evils_idx]
+
+            # 更新聚类标签
+            for idx in evils_idx:
+                cluster_labels[idx] = 1  # 1 表示恶意
 
             print('benign', benign_idx, 'evil', evils_idx)
             print(f'[FDCR-NoCheat Detection] Predicted benign: {benign_idx}, Predicted malicious: {list(evils_idx)}')
@@ -171,6 +198,45 @@ class OurRandomControlNoCheat(ServerMethod):
                     index += param_number
                     curr_param.data.copy_(prev_para - weight_delta)
                 nets_list[i] = curr_net
+
+        # ========== Step 1: 记录核心四件套和决策量 ==========
+        if self.enable_step1_logging and self.fdcr_logger is not None:
+            for query_index in range(len(nets_list)):
+                # 计算 delta_w_true: 直接从模型差分得到（无歧义）
+                delta_w_true = vectorize_nets_list[query_index] - prev_vectorize_net
+                
+                self.fdcr_logger.log_round_client(
+                    round_idx=self.epoch_index,
+                    client_idx=query_index,
+                    F_raw=fish_list[query_index],
+                    I_minmax=weight_list[query_index],
+                    min_F=torch.min(fish_list[query_index]),
+                    max_F=torch.max(fish_list[query_index]),
+                    delta_w_true=delta_w_true,
+                    g_weighted=weight_grad_list[query_index]
+                )
+            
+            # 记录决策量
+            self.fdcr_logger.log_round_decision(
+                round_idx=self.epoch_index,
+                ge_global=weight_global_grad,
+                V_k=div_score,
+                cluster_labels=cluster_labels,
+                benign_idx=benign_idx,
+                evil_idx=list(evils_idx) if isinstance(evils_idx, np.ndarray) else evils_idx,
+                alpha_b=reconstructed_freq if isinstance(reconstructed_freq, np.ndarray) else np.array(reconstructed_freq)
+            )
+            
+            # 记录 ground truth
+            self.fdcr_logger.log_ground_truth(
+                round_idx=self.epoch_index,
+                actual_malicious_idx=actual_malicious_idx
+            )
+            
+            # 保存本轮数据
+            self.fdcr_logger.save_round(self.epoch_index)
+            print(f'[Step1 Logger] Round {self.epoch_index} saved.')
+        # ========== End Step 1 记录 ==========
 
         predicted_malicious = list(evils_idx) if isinstance(evils_idx, np.ndarray) else evils_idx
         filtered_ratio = self.compute_filtered_ratio(predicted_malicious, actual_malicious_idx)

@@ -26,34 +26,48 @@ def analyze_no_attack_experiment(alpha, server_type, seed=0):
     
     # 计算指标
     total_rounds = len(df)
-    
-    # FPR: 在无攻击场景下，所有被标记为恶意的都是误报
-    # 因为实际恶意客户端数量为0
-    fpr_per_round = df['FP'] / (df['TN'] + df['FP'])  # FP / (TN + FP)
-    avg_fpr = fpr_per_round.mean()
-    
-    # 被过滤比例
     total_clients = 10  # 总客户端数
-    filtered_ratio_per_round = df['predicted_malicious_count'] / total_clients
-    avg_filtered_ratio = filtered_ratio_per_round.mean()
     
-    # 统计有多少轮产生了误报
-    rounds_with_fp = (df['FP'] > 0).sum()
-    fp_rate = rounds_with_fp / total_rounds
+    # 在无攻击场景下，所有客户端都是良性的
+    # 所以被标记为恶意的都是误报(FP)
+    fp_counts = []
+    filtered_counts = []
     
-    # 最大误报数
-    max_fp = df['FP'].max()
+    for _, row in df.iterrows():
+        # 解析malicious_indices
+        mal_str = str(row['malicious_indices'])
+        if mal_str and mal_str != 'nan' and mal_str.strip():
+            # 分号分隔的索引
+            predicted_malicious = [int(x) for x in mal_str.split(';') if x.strip()]
+            fp_count = len(predicted_malicious)  # 所有预测为恶意的都是误报
+        else:
+            fp_count = 0
+        
+        fp_counts.append(fp_count)
+        filtered_counts.append(fp_count)
+    
+    # 计算统计指标
+    avg_fp_count = sum(fp_counts) / total_rounds if total_rounds > 0 else 0
+    max_fp_count = max(fp_counts) if fp_counts else 0
+    rounds_with_fp = sum(1 for fp in fp_counts if fp > 0)
+    fp_occurrence_rate = (rounds_with_fp / total_rounds * 100) if total_rounds > 0 else 0
+    
+    # FPR = FP / (TN + FP) = FP / total_clients (因为没有真正的恶意客户端)
+    avg_fpr = (avg_fp_count / total_clients * 100) if total_clients > 0 else 0
+    
+    # 平均过滤比例
+    avg_filtered_ratio = (sum(filtered_counts) / (total_rounds * total_clients) * 100) if total_rounds > 0 else 0
     
     results = {
         'alpha': alpha,
         'server_type': server_type,
         'total_rounds': total_rounds,
-        'avg_fpr': avg_fpr * 100,  # 转换为百分比
-        'avg_filtered_ratio': avg_filtered_ratio * 100,
+        'avg_fpr': avg_fpr,
+        'avg_filtered_ratio': avg_filtered_ratio,
         'rounds_with_fp': rounds_with_fp,
-        'fp_occurrence_rate': fp_rate * 100,
-        'max_fp_count': max_fp,
-        'avg_fp_count': df['FP'].mean()
+        'fp_occurrence_rate': fp_occurrence_rate,
+        'max_fp_count': max_fp_count,
+        'avg_fp_count': avg_fp_count
     }
     
     return results

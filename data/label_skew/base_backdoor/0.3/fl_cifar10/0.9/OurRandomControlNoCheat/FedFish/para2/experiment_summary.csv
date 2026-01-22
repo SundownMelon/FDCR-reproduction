@@ -1,0 +1,7 @@
+metric,value
+steady_state_acc,33.506667
+steady_state_asr,8.170000
+mean_filtered_ratio,0.222222
+detection_accuracy,0.222222
+total_epochs,3
+window_size,10
