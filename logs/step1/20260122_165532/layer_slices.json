@@ -1,0 +1,326 @@
+{
+  "L0": {
+    "classifier": {
+      "params": [
+        "cls.weight",
+        "cls.bias"
+      ],
+      "indices": [
+        {
+          "param": "cls.weight",
+          "offset": 90056,
+          "length": 2560
+        },
+        {
+          "param": "cls.bias",
+          "offset": 92616,
+          "length": 10
+        }
+      ]
+    },
+    "backbone": {
+      "params": [
+        "feats.conv1.weight",
+        "feats.conv1.bias",
+        "feats.conv2.weight",
+        "feats.conv2.bias",
+        "feats.fc1.weight",
+        "feats.fc1.bias",
+        "feats.fc2.weight",
+        "feats.fc2.bias",
+        "l1.weight",
+        "l1.bias",
+        "l2.weight",
+        "l2.bias"
+      ],
+      "indices": [
+        {
+          "param": "feats.conv1.weight",
+          "offset": 0,
+          "length": 450
+        },
+        {
+          "param": "feats.conv1.bias",
+          "offset": 450,
+          "length": 6
+        },
+        {
+          "param": "feats.conv2.weight",
+          "offset": 456,
+          "length": 2400
+        },
+        {
+          "param": "feats.conv2.bias",
+          "offset": 2856,
+          "length": 16
+        },
+        {
+          "param": "feats.fc1.weight",
+          "offset": 2872,
+          "length": 48000
+        },
+        {
+          "param": "feats.fc1.bias",
+          "offset": 50872,
+          "length": 120
+        },
+        {
+          "param": "feats.fc2.weight",
+          "offset": 50992,
+          "length": 10080
+        },
+        {
+          "param": "feats.fc2.bias",
+          "offset": 61072,
+          "length": 84
+        },
+        {
+          "param": "l1.weight",
+          "offset": 61156,
+          "length": 7056
+        },
+        {
+          "param": "l1.bias",
+          "offset": 68212,
+          "length": 84
+        },
+        {
+          "param": "l2.weight",
+          "offset": 68296,
+          "length": 21504
+        },
+        {
+          "param": "l2.bias",
+          "offset": 89800,
+          "length": 256
+        }
+      ]
+    }
+  },
+  "L1": {
+    "head": {
+      "params": [
+        "cls.weight",
+        "cls.bias"
+      ],
+      "indices": [
+        {
+          "param": "cls.weight",
+          "offset": 90056,
+          "length": 2560
+        },
+        {
+          "param": "cls.bias",
+          "offset": 92616,
+          "length": 10
+        }
+      ]
+    },
+    "last_block": {
+      "params": [
+        "l2.weight",
+        "l2.bias"
+      ],
+      "indices": [
+        {
+          "param": "l2.weight",
+          "offset": 68296,
+          "length": 21504
+        },
+        {
+          "param": "l2.bias",
+          "offset": 89800,
+          "length": 256
+        }
+      ]
+    },
+    "l1": {
+      "params": [
+        "l1.weight",
+        "l1.bias"
+      ],
+      "indices": [
+        {
+          "param": "l1.weight",
+          "offset": 61156,
+          "length": 7056
+        },
+        {
+          "param": "l1.bias",
+          "offset": 68212,
+          "length": 84
+        }
+      ]
+    }
+  },
+  "L2": {
+    "feats.conv1.weight": {
+      "params": [
+        "feats.conv1.weight"
+      ],
+      "indices": [
+        {
+          "param": "feats.conv1.weight",
+          "offset": 0,
+          "length": 450
+        }
+      ]
+    },
+    "feats.conv1.bias": {
+      "params": [
+        "feats.conv1.bias"
+      ],
+      "indices": [
+        {
+          "param": "feats.conv1.bias",
+          "offset": 450,
+          "length": 6
+        }
+      ]
+    },
+    "feats.conv2.weight": {
+      "params": [
+        "feats.conv2.weight"
+      ],
+      "indices": [
+        {
+          "param": "feats.conv2.weight",
+          "offset": 456,
+          "length": 2400
+        }
+      ]
+    },
+    "feats.conv2.bias": {
+      "params": [
+        "feats.conv2.bias"
+      ],
+      "indices": [
+        {
+          "param": "feats.conv2.bias",
+          "offset": 2856,
+          "length": 16
+        }
+      ]
+    },
+    "feats.fc1.weight": {
+      "params": [
+        "feats.fc1.weight"
+      ],
+      "indices": [
+        {
+          "param": "feats.fc1.weight",
+          "offset": 2872,
+          "length": 48000
+        }
+      ]
+    },
+    "feats.fc1.bias": {
+      "params": [
+        "feats.fc1.bias"
+      ],
+      "indices": [
+        {
+          "param": "feats.fc1.bias",
+          "offset": 50872,
+          "length": 120
+        }
+      ]
+    },
+    "feats.fc2.weight": {
+      "params": [
+        "feats.fc2.weight"
+      ],
+      "indices": [
+        {
+          "param": "feats.fc2.weight",
+          "offset": 50992,
+          "length": 10080
+        }
+      ]
+    },
+    "feats.fc2.bias": {
+      "params": [
+        "feats.fc2.bias"
+      ],
+      "indices": [
+        {
+          "param": "feats.fc2.bias",
+          "offset": 61072,
+          "length": 84
+        }
+      ]
+    },
+    "l1.weight": {
+      "params": [
+        "l1.weight"
+      ],
+      "indices": [
+        {
+          "param": "l1.weight",
+          "offset": 61156,
+          "length": 7056
+        }
+      ]
+    },
+    "l1.bias": {
+      "params": [
+        "l1.bias"
+      ],
+      "indices": [
+        {
+          "param": "l1.bias",
+          "offset": 68212,
+          "length": 84
+        }
+      ]
+    },
+    "l2.weight": {
+      "params": [
+        "l2.weight"
+      ],
+      "indices": [
+        {
+          "param": "l2.weight",
+          "offset": 68296,
+          "length": 21504
+        }
+      ]
+    },
+    "l2.bias": {
+      "params": [
+        "l2.bias"
+      ],
+      "indices": [
+        {
+          "param": "l2.bias",
+          "offset": 89800,
+          "length": 256
+        }
+      ]
+    },
+    "cls.weight": {
+      "params": [
+        "cls.weight"
+      ],
+      "indices": [
+        {
+          "param": "cls.weight",
+          "offset": 90056,
+          "length": 2560
+        }
+      ]
+    },
+    "cls.bias": {
+      "params": [
+        "cls.bias"
+      ],
+      "indices": [
+        {
+          "param": "cls.bias",
+          "offset": 92616,
+          "length": 10
+        }
+      ]
+    }
+  }
+}
