@@ -15,7 +15,7 @@ import numpy as np
 import copy
 import os
 from Server.OurRandomControlNoCheat import OurRandomControlNoCheat
-from finch import FINCH
+from utils.finch import FINCH
 
 
 class CosineFDCR(OurRandomControlNoCheat):
