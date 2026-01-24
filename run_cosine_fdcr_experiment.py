@@ -49,13 +49,12 @@ def run_experiment(variant: str, slice_mode: str, rounds: int = 100, beta: float
     ]
     
     import subprocess
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd)  # 移除 capture_output，让输出实时显示
     
     if result.returncode != 0:
-        print(f"实验失败: {result.stderr}")
+        print(f"实验失败")
         return None
     
-    print(result.stdout)
     return {'variant': variant, 'status': 'completed'}
 
 
