@@ -218,6 +218,7 @@ class CosineFDCR(OurRandomControlNoCheat):
             reconstructed_freq = freq / (sum(freq) + self.eps)
         
         # 聚合（使用 reconstructed_freq）
+        self.aggregation_weight = reconstructed_freq  # 供 training.py 记录
         self.agg_parts(
             online_clients_list=online_clients_list,
             nets_list=nets_list,
