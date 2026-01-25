@@ -212,22 +212,19 @@ class CosineFDCR(OurRandomControlNoCheat):
                 'cluster_labels': cluster_labels
             })
             
-            # 重新计算权重（过滤恶意客户端）
-            reconstructed_freq = self.weight_calculate(
-                online_clients_list=[online_clients_list[i] for i in benign_idx],
-                priloader_list=[priloader_list[i] for i in benign_idx]
-            )
+            # 重新计算权重：将恶意客户端权重置 0，然后归一化
+            freq[evils_idx] = 0
+            reconstructed_freq = freq / (sum(freq) + self.eps)
         
-        # 聚合（仅良性客户端）
-        if len(benign_idx) > 0:
-            self.agg_parts(
-                online_clients_list=[online_clients_list[i] for i in benign_idx],
-                nets_list=[nets_list[i] for i in benign_idx],
-                global_net=global_net,
-                freq=reconstructed_freq,
-                except_part=[],
-                global_only=False
-            )
+        # 聚合（使用 reconstructed_freq）
+        self.agg_parts(
+            online_clients_list=online_clients_list,
+            nets_list=nets_list,
+            global_net=global_net,
+            freq=reconstructed_freq,
+            except_part=[],
+            global_only=False
+        )
 
 
 class CosineFDCR_Head(CosineFDCR):
