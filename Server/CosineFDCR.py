@@ -175,6 +175,7 @@ class CosineFDCR(OurRandomControlNoCheat):
         # 计算 score
         scores = self.compute_score(gI_list, freq, mode=self.score_mode)
         div_score = scores.view(-1, 1)
+        self.div_score = div_score  # 供 training.py 记录
         
         # FINCH 聚类
         fin = FINCH()
